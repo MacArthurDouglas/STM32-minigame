@@ -1,0 +1,51 @@
+HELP.md
+Listings/
+Objects/
+.vs/
+
+
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+
+### VS Code ###
+.vscode/
+
+# Backup / temp
+*.bak
+*.tmp
+
+# Keil / embedded build artifacts
+*.ddk
+*.edk
+*.lst
+*.lnp
+*.mpf
+*.mpj
+*.obj
+*.omf
+*.plg
+*.rpt
+*.__i
+*.crf
+*.o
+*.d
+*.axf
+*.tra
+*.dep
+*.iex
+*.sct
+*.map
+
+# Logs
+JLinkLog.txt
+
+# Reports / generated html
+*.htm
+
+cmake-build-debug/
+cmake-build-debug-event-trace/
