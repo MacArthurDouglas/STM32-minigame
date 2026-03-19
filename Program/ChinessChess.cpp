@@ -1,34 +1,69 @@
-#include<bits/stdc++.h>
-#include<windows.h>
-#define KEY_DOWN(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1:0)
+#include "Key.h"
+#include <string>
+#include <cmath>
 using namespace std;
 int table[11][10];
 string ptr[11][11];
-//string red[7]={"車","馬","相","仕","帅","兵","炮"};
-//string black[7]={"车","马","象","士","将","卒","砲"};
-string allChess[14]= {"車","馬","相","仕","帅","兵","炮","车","马","象","士","将","卒","砲"};
+typedef enum {
+    RED_CHE = 0,
+    RED_MA = 1,
+    RED_XIANG = 2,
+    RED_SHI   = 3,
+    RED_SHUAI  = 4,
+    RED_BING = 5,
+    RED_PAO = 6,
+    BLACK_CHE = 7,
+    BLACK_MA = 8,
+    BLACK_XIANG = 9,
+    BLACK_SHI   = 10,
+    BLACK_JIANG  = 11,
+    BLACK_ZU = 12,
+    BLACK_PAO = 13,
+    DIAN_WEI = 15,
+    SHANG_CHU_HE = 16,
+    XIA_CHU_HE = 17,
+}ChessIndex;
+
+
+typedef enum{
+	WU = 0,
+	RED = 1,
+	BLACK = 2,
+}ChessZhenYing;
+
+
+
+// string allChess[14]= {"車","馬","相","仕","帅","兵","炮","车","马","象","士","将","卒","砲"};
 string shiJian;
 string lastShiJian;
 bool redTurn;
 bool takeChess;
-//const string shangChuHe="┴";
-//const string xiaChuHe="┬";
-//const string dianWei="┼";
 
-const string shangChuHe = "┻";
+/* const string shangChuHe = "┻";
 const string xiaChuHe = "┳";
-const string dianWei = "╋";
+const string dianWei = "╋"; */
+const string shangChuHe = "s";
+const string xiaChuHe = "x";
+const string dianWei = "d";
 static bool gameEnd;
-static string whoWin;
+static ChessZhenYing whoWin;
 
 struct Pointer {
 	int x;
 	int y;
 } curPointer,afterPointer,beginChess,endChess;
 
+int myAbs(int a){
+	return a>0?a:-a;
+}
+
+int mySquare(int a){
+	return a*a;
+}
+
 
 void init() { //初始化棋盘
-	whoWin = "无";
+	whoWin = WU;
 	gameEnd = false;
 	curPointer.x=1;
 	curPointer.y=1;
@@ -42,8 +77,9 @@ void init() { //初始化棋盘
 			ptr[i][j]="  ";
 		}
 	}
-	ptr[curPointer.y][curPointer.x]="→";
-	ptr[curPointer.y][curPointer.x+1]="←";
+/* 	ptr[curPointer.y][curPointer.x]="→";
+	ptr[curPointer.y][curPointer.x+1]="←"; */
+
 	for(int i=0; i<=5; i++) {
 		table[10][i+1]=i;
 	}
@@ -89,8 +125,7 @@ void myprint() { //打印
 			
 			buffer+=ptr[i][j];
 			if(table[i][j]>=0 and table[i][j]<=13) {
-//				cout<<allChess[table[i][j]];
-				buffer+=allChess[table[i][j]];
+				// buffer+=allChess[table[i][j]];
 			} else {
 				switch(table[i][j]) {
 					case 15:
@@ -112,25 +147,25 @@ void myprint() { //打印
 		}
 //		cout<<ptr[i][10];
 		buffer+=ptr[i][10];
-		cout<<buffer;
+/* 		cout<<buffer;
 		cout<<endl;
-		cout<<endl;
+		cout<<endl; */
 	}
-	buffer="上个事件：";
+	// buffer="上个事件：";
 	buffer+=lastShiJian;
-	cout<<buffer;
-	cout<<endl;
-	buffer="当前："+shiJian;
-	cout<<buffer;
-	cout<<endl;
+/* 	cout<<buffer;
+	cout<<endl; */
+	// buffer="当前："+shiJian;
+/* 	cout<<buffer;
+	cout<<endl; */
 	if(redTurn) {
 		
-		buffer="现在到红方";
+		// buffer="现在到红方";
 	} else {
-		buffer="现在到黑方";
+		// buffer="现在到黑方";
 	}
-	cout<<buffer;
-	cout<<endl;
+/* 	cout<<buffer;
+	cout<<endl; */
 }
 
 
@@ -156,12 +191,12 @@ void changePointer(int direction) {
 		ptr[curPointer.y][curPointer.x]="  ";
 		ptr[curPointer.y][curPointer.x+1]="  ";
 		curPointer=afterPointer;
-		ptr[curPointer.y][curPointer.x]="→";
-		ptr[curPointer.y][curPointer.x+1]="←";
+/* 		ptr[curPointer.y][curPointer.x]="→";
+		ptr[curPointer.y][curPointer.x+1]="←"; */
 	}
 }
 void playError() {
-	shiJian="你不能这么做！";
+	// shiJian="你不能这么做！";
 	//shiJian+=beginChess.x+'0';
 	//shiJian+=",";
 	//
@@ -177,17 +212,17 @@ void playError() {
 }
 void gameOver() {
 
-	shiJian = whoWin+"方胜利！按任意键重新开始游戏。";
+	// shiJian = whoWin+"方胜利！按任意键重新开始游戏。";
 	gameEnd = true;
 }
 void fangZhi() {
 	bool laoJiang=0;
 	if(table[curPointer.y][curPointer.x]==4 or table[curPointer.y][curPointer.x]==11) {
 		if (table[curPointer.y][curPointer.x] == 4) {
-			whoWin = "黑";
+			whoWin = BLACK;
 		}
 		else {
-			whoWin = "红";
+			whoWin = RED;
 		}
 		laoJiang=1;
 	}
@@ -201,7 +236,7 @@ void fangZhi() {
 	} else {
 		redTurn=1;
 	}
-	lastShiJian+=allChess[table[beginChess.y][beginChess.x]];
+	// lastShiJian+=allChess[table[beginChess.y][beginChess.x]];
 
 	if(beginChess.y==5) {
 		table[beginChess.y][beginChess.x]=16;
@@ -235,7 +270,7 @@ void myMove() {
 
 					}
 				} else if(beginChess.y<=5) {
-					if(abs(curPointer.x-beginChess.x)==1) {
+					if(myAbs(curPointer.x-beginChess.x)==1) {
 						fangZhi();
 						return;
 					}
@@ -252,7 +287,7 @@ void myMove() {
 
 					}
 				} else if(beginChess.y>=6) {
-					if(abs(curPointer.x-beginChess.x)==1) {
+					if(myAbs(curPointer.x-beginChess.x)==1) {
 						fangZhi();
 						return;
 					}
@@ -261,7 +296,7 @@ void myMove() {
 			playError();
 			break;
 		case 0://0和7是车
-CHE:
+		case 7:
 			if(curPointer.y == beginChess.y or curPointer.x==beginChess.x) {
 				if(curPointer.y == beginChess.y) { //平移
 					myHorizontal=1;
@@ -306,11 +341,8 @@ CHE:
 			}
 
 			break;
-		case 7:
-			goto CHE;
-			break;
 		case 6://炮
-PAO:
+		case 13: 
 			mountain=0;
 			if(curPointer.y == beginChess.y or curPointer.x==beginChess.x) {
 				if(curPointer.y == beginChess.y) { //平移
@@ -383,12 +415,9 @@ PAO:
 				playError();
 			}
 			break;
-		case 13:
-			goto PAO;
-			break;
 		case 4:
-JIANGJUN:
-			myDistance=pow(abs(curPointer.x-beginChess.x),2)+pow(abs(curPointer.y-beginChess.y),2);
+		case 11:
+			myDistance=mySquare(myAbs(curPointer.x-beginChess.x))+mySquare(myAbs(curPointer.y-beginChess.y));
 //		int bianJie;
 
 			if(curPointer.y == beginChess.y or curPointer.x==beginChess.x) {
@@ -444,12 +473,9 @@ JIANGJUN:
 //			curPointer.x;
 
 			break;
-		case 11:
-			goto JIANGJUN;
-			break;
 		case 3:
-SHI:
-			myDistance=pow(abs(curPointer.x-beginChess.x),2)+pow(abs(curPointer.y-beginChess.y),2);
+		case 10: 
+			myDistance=mySquare(myAbs(curPointer.x-beginChess.x))+mySquare(myAbs(curPointer.y-beginChess.y));
 			if(myDistance==2) {
 				if(table[beginChess.y][beginChess.x]==3) {
 					red=1;
@@ -484,12 +510,9 @@ SHI:
 				return;
 			}
 			break;
-		case 10:
-			goto SHI;
-			break;
 		case 2:
-XIANG:
-			myDistance=pow(abs(curPointer.x-beginChess.x),2)+pow(abs(curPointer.y-beginChess.y),2);
+		case 9: 
+			myDistance=mySquare(myAbs(curPointer.x-beginChess.x))+mySquare(myAbs(curPointer.y-beginChess.y));
 			if(myDistance!=8) {
 				playError();
 				return;
@@ -546,12 +569,9 @@ XIANG:
 			fangZhi();
 
 			break;
-		case 9:
-			goto XIANG;
-			break;
 		case 1:
-MA:
-			myDistance=pow(abs(curPointer.x-beginChess.x),2)+pow(abs(curPointer.y-beginChess.y),2);
+		case 8:
+			myDistance=mySquare(myAbs(curPointer.x-beginChess.x))+mySquare(myAbs(curPointer.y-beginChess.y));
 			if(myDistance!=5) {
 				playError();
 				return;
@@ -591,12 +611,9 @@ MA:
 			}
 			fangZhi();
 			break;
-		case 8:
-			goto MA;
-			break;
 
 		default:
-			cout<<"error!"<<endl;
+			// cout<<"error!"<<endl;
 	}
 }
 
@@ -621,22 +638,22 @@ bool canTakeChess(bool isRed) {
 void check() {
 	int direction;
 	direction=0;
-	if(KEY_DOWN('S') or KEY_DOWN(40)) {
+	if(keyDown(KEY_DOWN)) {
 		direction=1;
-	} else if(KEY_DOWN('W') or KEY_DOWN(38)) {
+	} else if(keyDown(KEY_UP)) {
 		direction=2;
-	} else if(KEY_DOWN('A') or KEY_DOWN(37)) {
+	} else if(keyDown(KEY_LEFT)) {
 		direction=3;
-	} else if(KEY_DOWN('D') or KEY_DOWN(39)) {
+	} else if(keyDown(KEY_RIGHT)) {
 		direction=4;
-	} else if(KEY_DOWN(32)) {
+	} else if(keyDown(KEY_CONFIRM)) {
 //		shiJian="1234";
 		if(table[curPointer.y][curPointer.x]<=13) {
 			if(canTakeChess(redTurn)) {
 				beginChess.y=curPointer.y;
 				beginChess.x=curPointer.x;
-				shiJian="拿起了：";
-				shiJian+=allChess[table[beginChess.y][beginChess.x]];
+				// shiJian="拿起了：";
+				// shiJian+=allChess[table[beginChess.y][beginChess.x]];
 				takeChess=1;
 			} else {
 				if(takeChess) {
@@ -659,7 +676,7 @@ void check() {
 	}
 }
 
-int main() {
+/* int main() {
 	RESTART:
 	init();
 	while(true) {
@@ -674,4 +691,4 @@ int main() {
 	}
 
 	return 0;
-}
+} */

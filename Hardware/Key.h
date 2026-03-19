@@ -10,10 +10,15 @@ typedef enum {
     KEY_CONFIRM  = 4,    /* 确认 */
 } KeyIndex;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void Key_Init(void);
-bool Key_GetNum(KeyIndex id);
+bool keyDown(KeyIndex id);
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 

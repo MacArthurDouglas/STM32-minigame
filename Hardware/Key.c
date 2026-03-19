@@ -30,7 +30,7 @@ typedef enum {
   KEY_GPIO_B  = 2,    /* GPIOB */
 } KeyLocationType;
 
-bool Key_GetNum(KeyIndex key){
+bool keyDown(KeyIndex key){
 	uint16_t location;
 	KeyLocationType type;
 	uint8_t keyDownSignal;

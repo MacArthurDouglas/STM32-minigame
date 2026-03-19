@@ -1,6 +1,7 @@
 #include "stm32f10x.h"
 #include "OLED.h"
 #include "Key.h"
+#include "ChinessChess.h"
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 
@@ -29,19 +30,19 @@ int main(void)
 		OLED_ShowBinNum(2,1,data,16);
 		uint16_t dataB=GPIO_ReadInputData(GPIOB);
 		OLED_ShowBinNum(3,1,dataB,16); */
-		if(Key_GetNum(KEY_UP)){
+		if(keyDown(KEY_UP)){
 			OLED_ShowChar(2,1,'U');
 		}
-		if(Key_GetNum(KEY_DOWN)){
+		if(keyDown(KEY_DOWN)){
 			OLED_ShowChar(2,3,'D');
 		}
-		if(Key_GetNum(KEY_RIGHT)){
+		if(keyDown(KEY_RIGHT)){
 			OLED_ShowChar(2,5,'R');
 		}
-		if(Key_GetNum(KEY_LEFT)){
+		if(keyDown(KEY_LEFT)){
 			OLED_ShowChar(2,7,'L');
 		}
-		if(Key_GetNum(KEY_CONFIRM)){
+		if(keyDown(KEY_CONFIRM)){
 			OLED_ShowChar(2,9,'C');
 		}
 	}

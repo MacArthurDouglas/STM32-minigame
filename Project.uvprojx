@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Start;.\Library;.\User;.\System;.\Hardware;.\Hardware\U8g2</IncludePath>
+              <IncludePath>.\Start;.\Library;.\User;.\System;.\Hardware;.\Hardware\U8g2;.\Program</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -944,6 +944,21 @@
               <FileName>stm32f10x_it.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_it.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Program</GroupName>
+          <Files>
+            <File>
+              <FileName>ChinessChess.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Program\ChinessChess.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>ChinessChess.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Program\ChinessChess.h</FilePath>
             </File>
           </Files>
         </Group>
