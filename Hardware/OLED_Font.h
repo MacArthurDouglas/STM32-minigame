@@ -20,6 +20,10 @@ typedef enum {
     CN_SHI2 = 6,    /* 时 */
     CN_FEN  = 7,    /* 分 */
     CN_MIAO = 8,    /* 秒 */
+    SELECTION_BOX = 9,   //选择框
+    CHE_SELECTED_2 = 10,
+    CHE_SELECTED_3 = 11,
+    CHE = 12,
 } ChineseIndex;
 
 

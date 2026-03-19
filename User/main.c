@@ -1,11 +1,16 @@
 #include "stm32f10x.h"
 #include "OLED.h"
+#include "Key.h"
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 
 int main(void)
 {
 	OLED_Init();
-	OLED_ShowChinese(1, 1, CN_WEN);
+	Key_Init();
+	// OLED_ShowChinese(1, 1, CN_WEN);
+	ChineseIndex tempstr[]={CHE,SELECTION_BOX,CHE_SELECTED_2,CHE_SELECTED_3};
+	OLED_ShowChineseStr(1,1,tempstr,ARRAY_SIZE(tempstr));
 
 
 	// OLED_ShowChar(1,1,'A');
@@ -17,10 +22,27 @@ int main(void)
 
 	// OLED_ShowChineseStr(1, 1, "温度");
 
-
 	while(1)
 	{
-		
-        
+		OLED_Clear();
+/* 		uint16_t data=GPIO_ReadInputData(GPIOA);
+		OLED_ShowBinNum(2,1,data,16);
+		uint16_t dataB=GPIO_ReadInputData(GPIOB);
+		OLED_ShowBinNum(3,1,dataB,16); */
+		if(Key_GetNum(KEY_UP)){
+			OLED_ShowChar(2,1,'U');
+		}
+		if(Key_GetNum(KEY_DOWN)){
+			OLED_ShowChar(2,3,'D');
+		}
+		if(Key_GetNum(KEY_RIGHT)){
+			OLED_ShowChar(2,5,'R');
+		}
+		if(Key_GetNum(KEY_LEFT)){
+			OLED_ShowChar(2,7,'L');
+		}
+		if(Key_GetNum(KEY_CONFIRM)){
+			OLED_ShowChar(2,9,'C');
+		}
 	}
 }

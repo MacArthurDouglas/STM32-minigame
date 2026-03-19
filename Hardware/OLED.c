@@ -3,8 +3,12 @@
 #include "string.h"
 
 /*引脚配置*/
-#define OLED_W_SCL(x)		GPIO_WriteBit(GPIOA, GPIO_Pin_6, (BitAction)(x))
-#define OLED_W_SDA(x)		GPIO_WriteBit(GPIOA, GPIO_Pin_5, (BitAction)(x))
+#define YIHUI_OLED_SCL GPIO_Pin_7
+#define YIHUI_OLED_SDA GPIO_Pin_5
+
+
+#define OLED_W_SCL(x)		GPIO_WriteBit(GPIOA, YIHUI_OLED_SCL, (BitAction)(x))
+#define OLED_W_SDA(x)		GPIO_WriteBit(GPIOA, YIHUI_OLED_SDA, (BitAction)(x))
 
 /*引脚初始化*/
 void OLED_I2C_Init(void)
@@ -14,9 +18,9 @@ void OLED_I2C_Init(void)
 	GPIO_InitTypeDef GPIO_InitStructure;
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Pin = YIHUI_OLED_SCL;
  	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Pin = YIHUI_OLED_SDA;
  	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
 	OLED_W_SCL(1);
@@ -335,6 +339,16 @@ void OLED_ShowChinese(uint8_t Line, uint8_t Column, const uint8_t index)
 {
     uint8_t i;
     uint8_t x, y;
+    if (Column>8||Column<1)
+    {
+      return; // 列超出范围不显示
+    }
+    if (Line>4||Line<1)
+    {
+      return; // 行超出范围不显示
+    }
+    
+    
     x = (Column - 1) * 16;      // 每个汉字宽16像素
     y = (Line - 1) * 2;         // 每个汉字高16像素，占2页
     /* 第1页（上8行）写16字节 */
@@ -351,65 +365,19 @@ void OLED_ShowChinese(uint8_t Line, uint8_t Column, const uint8_t index)
     }
 }
 
-
-
 /**
-  * @brief  将中文字符映射到字模索引
-  * @param  s 指向当前中文字符的指针
-  * @retval 返回枚举索引，失败返回0xFF
-  */
-/* static uint8_t OLED_GetChineseIndex(const char *s)
-{
-    if (strncmp(s, "温", strlen("温")) == 0) return CN_WEN;
-    if (strncmp(s, "度", strlen("度")) == 0) return CN_DU;
-    if (strncmp(s, "湿", strlen("湿")) == 0) return CN_SHI;
-    if (strncmp(s, "年", strlen("年")) == 0) return CN_NIAN;
-    if (strncmp(s, "月", strlen("月")) == 0) return CN_YUE;
-    if (strncmp(s, "日", strlen("日")) == 0) return CN_RI;
-    if (strncmp(s, "时", strlen("时")) == 0) return CN_SHI2;
-    if (strncmp(s, "分", strlen("分")) == 0) return CN_FEN;
-    if (strncmp(s, "秒", strlen("秒")) == 0) return CN_MIAO;
-
-    return 0xFF;
-} */
-
-/**
-  * @brief  OLED显示中文字符串
+  * @brief  OLED显示中文字符串（索引方式）
   * @param  Line   行位置，范围：1~4
   * @param  Column 列位置，范围：1~8
-  * @param  Str    中文字符串
+  * @param  Str    汉字索引数组
+  * @param  Length 汉字数量
   * @retval 无
   */
-void OLED_ShowChineseStr(uint8_t Line, uint8_t Column, const char *Str)
+void OLED_ShowChineseStr(uint8_t Line, uint8_t Column, const ChineseIndex *Str, uint8_t Length)
 {
-    // uint8_t index;
-    // uint8_t charLen;
-
-    // while (*Str != '\0')
-    // {
-    //     index = OLED_GetChineseIndex(Str);
-    //     if (index != 0xFF)
-    //     {
-    //         OLED_ShowChinese(Line, Column, index);
-    //         Column++;
-
-    //         /* 跳过当前汉字字节数 */
-    //         charLen = strlen(
-    //             (index == CN_WEN)  ? "温" :
-    //             (index == CN_DU)   ? "度" :
-    //             (index == CN_SHI)  ? "湿" :
-    //             (index == CN_NIAN) ? "年" :
-    //             (index == CN_YUE)  ? "月" :
-    //             (index == CN_RI)   ? "日" :
-    //             (index == CN_SHI2) ? "时" :
-    //             (index == CN_FEN)  ? "分" : "秒"
-    //         );
-    //         Str += charLen;
-    //     }
-    //     else
-    //     {
-    //         /* 无法识别时跳过一个字节，避免死循环 */
-    //         Str++;
-    //     }
-    // }
+    uint8_t i;
+    for (i = 0; i < Length; i++)
+    {
+        OLED_ShowChinese(Line, Column + i, Str[i]);
+    }
 }
