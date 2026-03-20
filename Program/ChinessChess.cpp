@@ -2,8 +2,8 @@
 #include <string>
 #include <cmath>
 using namespace std;
-int table[11][10];
-string ptr[11][11];
+static int table[11][10];
+static string ptr[11][11];
 typedef enum {
     RED_CHE = 0,
     RED_MA = 1,
@@ -26,7 +26,7 @@ typedef enum {
 
 
 typedef enum{
-	WU = 0,
+	NONE = 0,
 	RED = 1,
 	BLACK = 2,
 }ChessZhenYing;
@@ -63,7 +63,7 @@ int mySquare(int a){
 
 
 void init() { //初始化棋盘
-	whoWin = WU;
+	whoWin = NONE;
 	gameEnd = false;
 	curPointer.x=1;
 	curPointer.y=1;
