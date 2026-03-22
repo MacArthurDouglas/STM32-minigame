@@ -5,6 +5,12 @@
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 
+void externGameOver(void){
+	
+}
+
+
+
 int main(void)
 {
 	OLED_Init();
