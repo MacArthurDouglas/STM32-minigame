@@ -381,3 +381,43 @@ void OLED_ShowChineseStr(uint8_t Line, uint8_t Column, const ChineseIndex *Str, 
         OLED_ShowChinese(Line, Column + i, Str[i]);
     }
 }
+
+
+/**
+  * @brief  OLED显示一个16x16汉字
+  * @param  Line   行位置，范围：1~4
+  * @param  Column 列位置，范围：1~8
+  * @param  Chinese  指向32字节字模数据
+  * @retval 无
+  */
+void OLED_ShowChineseCh(uint8_t Line, uint8_t Column, uint8_t* F16x16)
+{
+    uint8_t i;
+    uint8_t x, y;
+    if (Column>8||Column<1)
+    {
+      return; // 列超出范围不显示
+    }
+    if (Line>4||Line<1)
+    {
+      return; // 行超出范围不显示
+    }
+    
+    
+    x = (Column - 1) * 16;      // 每个汉字宽16像素
+    y = (Line - 1) * 2;         // 每个汉字高16像素，占2页
+    /* 第1页（上8行）写16字节 */
+    OLED_SetCursor(y, x);
+    for (i = 0; i < 16; i++)
+    {
+        OLED_WriteData(F16x16[i]);
+    }
+    /* 第2页（下8行）写16字节 */
+    OLED_SetCursor(y + 1, x);
+    for (i = 0; i < 16; i++)
+    {
+        OLED_WriteData(F16x16[i + 16]);
+    }
+}
+
+

@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void externGameOver(void);
+void game(void);
 
 #ifdef __cplusplus
 }

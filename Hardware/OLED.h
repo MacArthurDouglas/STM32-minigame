@@ -1,6 +1,10 @@
 #ifndef __OLED_H
 #define __OLED_H
 #include "OLED_Font.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 void OLED_Init(void);
 void OLED_Clear(void);
 void OLED_ShowChar(uint8_t Line, uint8_t Column, char Char);
@@ -11,4 +15,9 @@ void OLED_ShowHexNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Leng
 void OLED_ShowBinNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length);
 void OLED_ShowChinese(uint8_t Line, uint8_t Column, const uint8_t index);
 void OLED_ShowChineseStr(uint8_t Line, uint8_t Column, const ChineseIndex *Str, uint8_t Length);
+void OLED_ShowChineseCh(uint8_t Line, uint8_t Column, uint8_t* F16x16);
+#ifdef __cplusplus
+}
+#endif
+
 #endif

@@ -1,6 +1,10 @@
+#include "stm32f10x.h"                  // Device header
 #include "Key.h"
 #include "ChinessChess.h"
 #include <algorithm>
+#include "OLED.h"
+#include "string.h"
+#include "Delay.h"
 using namespace std;
 
 static int table[11][10];   //从1开始，0位置的不用
@@ -33,6 +37,35 @@ typedef enum{
 	CHESS_ZHENYING_BLACK = 2,
 }ChessZhenYing;
 
+
+ChineseIndex chess_to_chinese_map[18] = {
+    CHESS_RED_CHE,    // 0
+    CHESS_RED_MA,     // 1
+    CHESS_RED_XIANG,  // 2
+    CHESS_RED_SHI,    // 3
+    CHESS_RED_SHUAI,  // 4
+    CHESS_RED_BING,   // 5
+    CHESS_RED_PAO,    // 6
+    CHESS_BLACK_CHE,  // 7
+    CHESS_BLACK_MA,   // 8
+    CHESS_BLACK_XIANG,// 9
+    CHESS_BLACK_SHI,  // 10
+    CHESS_BLACK_SHUAI,// 11
+    CHESS_BLACK_BING, // 12
+    CHESS_BLACK_PAO,  // 13
+    SELECTION_BOX,  // 14
+    CHESS_DIAN_WEI,   // 15
+    CHESS_SHANG_CHU_HE,//16
+    CHESS_XIA_CHU_HE   //17
+};
+ChineseIndex chessToChineseIndex(int idx)
+{
+    if (idx > 17||idx==14) {
+        return SELECTION_BOX; // 或者其他默认值
+    }
+    return chess_to_chinese_map[idx];
+}
+
 static bool isRedTurn;  //是否到红方行动
 static bool isTakingChess;  //是否拿起了旗子
 
@@ -45,6 +78,7 @@ struct Pointer {
 };
 static Pointer curPointer; //当前指针
 static Pointer beginChess;
+static Pointer cameraPointer;
 
 int myAbs(int a){
 	return a>0?a:-a;
@@ -54,22 +88,47 @@ int mySquare(int a){
 	return a*a;
 }
 
+void updateCamera() {
+	// 如果光标跑到摄像机左边
+	if(curPointer.x < cameraPointer.x) {
+		cameraPointer.x = curPointer.x;
+	}
+	// 如果光标跑到摄像机右边
+	else if(curPointer.x > cameraPointer.x + 7) {
+		cameraPointer.x = curPointer.x - 7;
+	}
+	// 如果光标跑到摄像机上边
+	if(curPointer.y < cameraPointer.y) {
+		cameraPointer.y = curPointer.y;
+	}
+	// 如果光标跑到摄像机下边
+	else if(curPointer.y > cameraPointer.y + 3) {
+		cameraPointer.y = curPointer.y - 3;
+	}
+	// 边界修正
+	if(cameraPointer.x < 1) cameraPointer.x = 1;
+	if(cameraPointer.y < 1) cameraPointer.y = 1;
+	if(cameraPointer.x > 2) cameraPointer.x = 2;
+	if(cameraPointer.y > 7) cameraPointer.y = 7;
+}
+
 
 void init() { //初始化棋盘
 	whoWin = CHESS_ZHENYING_NONE;
 	gameEnd = false;
 	curPointer.x=1;
 	curPointer.y=1;
+	beginChess.x=5;
+	beginChess.y=2;
+	cameraPointer.x=1;
+	cameraPointer.y=1;
 	isRedTurn = true;
 	isTakingChess = false;
 	for(int i=1; i<=10; i++) {
 		for(int j=1; j<=9; j++) {
 			table[i][j]=DIAN_WEI;  //把所有位置初始化为点位（1-10 1-9）
-			// ptr[i][j]="  ";
 		}
 	}
-/* 	ptr[curPointer.y][curPointer.x]="→";
-	ptr[curPointer.y][curPointer.x+1]="←"; */
 
 	for(int i=1; i<=5; i++) {
 		table[10][i]=i-1;   //红方 车 马 象 士 帅
@@ -106,8 +165,35 @@ void init() { //初始化棋盘
 	}
 }
 
-void myprint(){
+void myPrint(){
+	OLED_Clear();
 
+	for(int y = cameraPointer.y; y < cameraPointer.y + 4; y++) {
+		for(int x = cameraPointer.x; x < cameraPointer.x + 8; x++) {
+			if(x > 9 || y > 10) continue;
+
+			int chess=table[y][x];
+			ChineseIndex chineseIndex= chessToChineseIndex(chess);
+			uint8_t chessStr[32];
+				memcpy(chessStr,OLED_F16x16[chineseIndex],32);
+			if (isTakingChess&&beginChess.x == x && beginChess.y == y)
+			{
+				for (int i = 0; i < 32; i++)
+				{
+					chessStr[i] = chessStr[i] ^ 0xFF;
+				}
+				
+			}
+			else if(curPointer.x == x && curPointer.y == y){
+				for (int i = 0; i < 32; i++)
+				{
+					chessStr[i] = chessStr[i] ^ OLED_F16x16[SELECTION_BOX][i];
+				}
+				
+			}
+			OLED_ShowChineseCh(y+1-cameraPointer.y,x+1-cameraPointer.x,chessStr);
+		}
+	}
 }
 
 // void myprint() { //打印
@@ -182,9 +268,11 @@ void changePointer(int direction) {
 		default:
 			break;
 	}
-	if(afterPointer.x>0 and afterPointer.y>0 and afterPointer.x<10 and afterPointer.y<11) {   //判断指针没有超出边界
+	if(afterPointer.x>0 and afterPointer.y>0 and afterPointer.x<10 and afterPointer.y<11) {   //判断指针是否超出边界
 		curPointer=afterPointer;
 	}
+
+	updateCamera();
 }
 void playError() {
 	// shiJian="你不能这么做！";
@@ -203,10 +291,27 @@ void playError() {
 }
 extern void externGameOver(void);
 void gameOver() {
+	OLED_Clear();
+	ChineseIndex tempStr1[]={FANG,SHENG,LI,GANTANHAO,AN,REN,YI};
+	ChineseIndex tempStr2[]={JIAN,CHONG,XIN,KAI,SHI,YOU,XI,JUHAO};
+	if (whoWin==CHESS_ZHENYING_RED)
+	{
+		OLED_ShowChinese(1,1,HONG);
+	}
+	else{
+		OLED_ShowChinese(1,1,HEI);
+	}
+	
 
-	// shiJian = whoWin+"方胜利！按任意键重新开始游戏。";
-	gameEnd = true;
-	externGameOver();
+
+	OLED_ShowChineseStr(1,2,tempStr1,7);
+	OLED_ShowChineseStr(2,1,tempStr2,8);
+
+	while (true)
+	{
+					/* code */
+	}
+	
 }
 void fangZhi() {
 	bool laoJiang=0;
@@ -659,36 +764,19 @@ bool check() {
 void game(){
 
 	init();
-	myprint();
+	myPrint();
 	while(true) {
 		
 		if (check())
 		{
-			myprint();
+			if (gameEnd) {
+				gameOver();
+			}
+			myPrint();
 		}
 		
-		if (gameEnd) {
-			
-		}
+		
 		
 	}
 }
 
-
-
-/* int main() {
-	RESTART:
-	init();
-	while(true) {
-		myprint();
-		system("pause");
-		if (gameEnd) {
-			system("cls");
-			goto RESTART;
-		}
-		check();
-		system("cls");
-	}
-
-	return 0;
-} */
