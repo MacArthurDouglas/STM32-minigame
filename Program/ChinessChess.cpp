@@ -292,8 +292,9 @@ void playError() {
 extern void externGameOver(void);
 void gameOver() {
 	OLED_Clear();
-	ChineseIndex tempStr1[]={FANG,SHENG,LI,GANTANHAO,AN,REN,YI};
-	ChineseIndex tempStr2[]={JIAN,CHONG,XIN,KAI,SHI,YOU,XI,JUHAO};
+	ChineseIndex tempStr1[]={FANG,SHENG,LI,GANTANHAO};
+	ChineseIndex tempStr2[]={AN,XIA,FU,WEI,JIAN,CHONG,XIN,KAI};
+	ChineseIndex tempStr3[]={SHI,YOU,XI,JUHAO,JUHAO,JUHAO};
 	if (whoWin==CHESS_ZHENYING_RED)
 	{
 		OLED_ShowChinese(1,1,HONG);
@@ -304,8 +305,9 @@ void gameOver() {
 	
 
 
-	OLED_ShowChineseStr(1,2,tempStr1,7);
+	OLED_ShowChineseStr(1,2,tempStr1,4);
 	OLED_ShowChineseStr(2,1,tempStr2,8);
+	OLED_ShowChineseStr(3,1,tempStr3,6);
 
 	while (true)
 	{

@@ -59,6 +59,9 @@ typedef enum {
     YOU=44,
     XI=45,
     JUHAO=46,
+    XIA=47,
+    FU=48,
+    WEI=49,
 
 
 } ChineseIndex;
